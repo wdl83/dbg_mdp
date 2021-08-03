@@ -1,0 +1,44 @@
+[
+    {
+        "service" : "modbus_master_/dev/ttyUSB0",
+        "payload":
+        [
+            {
+                "comment" : "strip_updated 1, FX_NONE",
+                "addr": 4098,
+                "count": 1,
+                "fcode": 66,
+                "slave": 128,
+                "value": [1]
+            }
+        ]
+    },
+    {
+        "service" : "modbus_master_/dev/ttyUSB1",
+        "payload":
+        [
+            {
+                "comment" : "strip_updated 1, FX_NONE",
+                "addr": 4098,
+                "count": 1,
+                "fcode": 66,
+                "slave": 132,
+                "value": [1]
+            }
+        ]
+    },
+    {
+        "service" : "modbus_master_/dev/ttyUSB2",
+        "payload":
+        [
+            {
+                "comment" : "strip_updated 1, FX_NONE",
+                "addr": 4098,
+                "count": 1,
+                "fcode": 66,
+                "slave": 131,
+                "value": [1]
+            }
+        ]
+    }
+]
