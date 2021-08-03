@@ -1,0 +1,10 @@
+[
+    {
+        "service" : "modbus_master_/dev/ttyUSB0",
+        "addr" : [128]
+    },
+    {
+        "service" : "modbus_master_/dev/ttyUSB1",
+        "addr" : [132, 133]
+    }
+]

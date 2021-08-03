@@ -1,12 +1,22 @@
 #include <atomic>
+#include <fstream>
 #include <iostream>
+#include <vector>
 
 #include <unistd.h>
 
-#include "ModbusLogFetcher.h"
+#include <nlohmann/json.hpp>
+
+#include "Ensure.h"
 #include "HijackSignal.h"
+#include "ModbusLogFetcher.h"
 
 namespace {
+
+using json = nlohmann::json;
+
+constexpr auto SERVICE = "service";
+constexpr auto ADDR = "addr";
 
 void help(const char *argv0, const char *message = nullptr)
 {
@@ -78,6 +88,11 @@ int main(int argc, char *const argv[])
 
     try
     {
+        json cfg;
+        std::ifstream{input} >> cfg;
+
+        ENSURE(cfg.is_array(), RuntimeError);
+
         hijackSignal(SIGINT, dumpOnSignal);
         hijackSignal(SIGSTOP, dumpOnSignal);
         hijackSignal(SIGTERM, dumpOnSignal);
@@ -86,9 +101,19 @@ int main(int argc, char *const argv[])
 
         ModbusLogFetcher modbusLogFetcher(brokerAddress);
         fetcher = &modbusLogFetcher;
-        modbusLogFetcher.monitor("modbus_master_/dev/ttyUSB0", {128, 129, 130, 137, 138});
-        modbusLogFetcher.monitor("modbus_master_/dev/ttyUSB1", {132, 133});
-        modbusLogFetcher.monitor("modbus_master_/dev/ttyUSB2", {131});
+
+        for(const auto &i : cfg)
+        {
+            ENSURE(i.count(SERVICE), RuntimeError);
+            ENSURE(i[SERVICE].is_string(), RuntimeError);
+            ENSURE(i.count(ADDR), RuntimeError);
+            ENSURE(i[ADDR].is_array(), RuntimeError);
+
+            modbusLogFetcher.monitor(
+                i[SERVICE].get<std::string>(),
+                i[ADDR].get<std::vector<int>>());
+        }
+
         modbusLogFetcher.exec();
         fetcher = nullptr;
     }
